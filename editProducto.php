@@ -23,8 +23,8 @@ if (isset($_GET['id'])) {
 
 	if (isset($_POST['enviar']) && $_POST['enviar'] == 'si') {
 		//recuperamos los datos
-		$nombre = strip_tags($_POST['nombre']);
-		$codigo = strip_tags($_POST['codigo']);
+		$nombre = trim(strip_tags($_POST['nombre']));
+		$codigo = trim(strip_tags($_POST['codigo']));
 
 		//esta variable se parsea u obliga a ser un entero
 		$precio = (int) $_POST['precio'];

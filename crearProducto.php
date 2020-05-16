@@ -7,8 +7,8 @@ require('conexion.php');
 
 if (isset($_POST['enviar']) && $_POST['enviar'] == 'si') {
 	//recuperamos los datos
-	$nombre = strip_tags($_POST['nombre']);
-	$codigo = strip_tags($_POST['codigo']);
+	$nombre = trim(strip_tags($_POST['nombre']));
+	$codigo = trim(strip_tags($_POST['codigo']));
 
 	//esta variable se parsea u obliga a ser un entero
 	$precio = (int) $_POST['precio'];
@@ -18,20 +18,30 @@ if (isset($_POST['enviar']) && $_POST['enviar'] == 'si') {
 	}elseif (!$codigo) {
 		$mensaje = 'Ingrese el código del producto';
 	}else{
-		//enviar los datos a la base de datos
-		$sql = $con->prepare("INSERT INTO productos VALUES(null, ?, ?, ?)");
-		$sql->bindParam(1, $nombre);
-		$sql->bindParam(2, $codigo);
-		$sql->bindParam(3, $precio);
-		$sql->execute();
+		//verificar que no haya otro producto con el mismo codigo
+		$res = $con->prepare("SELECT id FROM productos WHERE codigo = ?");
+		$res->bindParam(1, $codigo);
+		$res->execute();
+		$cons = $res->fetch();
 
-		//numero de registros ingresados
-		$row = $sql->rowCount();
-		if ($row) {
-			$msg = 'ok';
-			header('Location: productos.php?m=' . $msg);
+		if ($cons) {
+			$mensaje = 'El producto ingresado ya existe... intentelo nuevamente';
 		}else{
-			$mensaje = 'El producto no se ha registrado';
+			//enviar los datos a la base de datos
+			$sql = $con->prepare("INSERT INTO productos VALUES(null, ?, ?, ?, now(),now())");
+			$sql->bindParam(1, $nombre);
+			$sql->bindParam(2, $codigo);
+			$sql->bindParam(3, $precio);
+			$sql->execute();
+
+			//numero de registros ingresados
+			$row = $sql->rowCount();
+			if ($row) {
+				$msg = 'ok';
+				header('Location: productos.php?m=' . $msg);
+			}else{
+				$mensaje = 'El producto no se ha registrado';
+			}
 		}
 	}
 }
@@ -69,7 +79,7 @@ if (isset($_POST['enviar']) && $_POST['enviar'] == 'si') {
 				</div>
 				<div class="form-group">
 					<label>Precio producto (CLP)</label>
-					<input type="text" name="precio" placeholder="Precio del producto" class="form-control" value="<?php echo @($precio); ?>">
+					<input type="text" name="precio" placeholder="Precio del producto solo números" class="form-control" value="<?php echo @($precio); ?>">
 				</div>
 				<div class="form-group">
 					<input type="hidden" name="enviar" value="si">

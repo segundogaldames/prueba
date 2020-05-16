@@ -11,7 +11,7 @@ if (isset($_GET['id'])) {
 	$id = (int) $_GET['id'];
 
 	//consulta a la tabla productos, traeremos todos los campos y registros de la tabla productos asociados a un id
-	$producto = $con->prepare("SELECT id,nombre,codigo,precio FROM productos WHERE id = ?");
+	$producto = $con->prepare("SELECT id,nombre,codigo,precio,created_at,updated_at FROM productos WHERE id = ?");
 	$producto->bindParam(1, $id); //sanitizando la variable
 
 	//ejecutar la consulta o traemos los datos efectivamente
@@ -63,6 +63,14 @@ if (isset($_GET['id'])) {
 				<tr>
 					<th>Precio $:</th>
 					<td><?php echo number_format($res['precio'],0,',','.'); ?></td>
+				</tr>
+				<tr>
+					<th>Fecha de creación:</th>
+					<td><?php echo $res['created_at']; ?></td>
+				</tr>
+				<tr>
+					<th>Fecha de modificación:</th>
+					<td><?php echo $res['updated_at'] ?></td>
 				</tr>
 			</table>
 			<p>
