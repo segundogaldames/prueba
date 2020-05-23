@@ -11,8 +11,8 @@ if (isset($_GET['id'])) {
 	//parseo o conversion de una variable en un entero
 	$id = (int) $_GET['id'];
 
-	//consulta a la tabla productos, traeremos todos los campos y registros de la tabla productos asociados a un id
-	$producto = $con->prepare("SELECT id,nombre,codigo,precio,activo,created_at,updated_at FROM productos WHERE id = ?");
+	//consulta a la tabla productos por id
+	$producto = $con->prepare("SELECT nombre, precio FROM productos WHERE id = ?");
 	$producto->bindParam(1, $id); //sanitizando la variable
 
 	//ejecutar la consulta o traemos los datos efectivamente
@@ -20,13 +20,14 @@ if (isset($_GET['id'])) {
 
 	//especificar que necesitamos todos los datos
 	$res = $producto->fetch();
+
+	//listamos las imagenes por producto
+	$imagenes = $con->prepare("SELECT descripcion, nombre FROM imagenes WHERE producto_id = ?");
+	$imagenes->bindParam(1, $id);
+	$imagenes->execute();
+
+	$img = $imagenes->fetchAll();
 }
-
-
-//comprobar que los datos estan disponibles
-//print_r($res);
-
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -44,75 +45,35 @@ if (isset($_GET['id'])) {
 		<?php include('header.php'); ?>
 		<div class="row">
 			<div class="col-md-6 mt-3">
-				<?php if(isset($_GET['m'])): ?>
-					<p class="alert alert-success">El producto se ha modificado correctamente</p>
-				<?php endif; ?>
-				<?php if(isset($_GET['img'])): ?>
-					<p class="alert alert-success">La imagen se ha agregado correctamente</p>
-				<?php endif; ?>
 				<h3>Ver Producto <?php echo $res['nombre']; ?></h3>
 				<table class="table table-hover table-bordered">
 					<!--Declaracion de las columnas de la tabla con sus nombres-->
-					<tr>
-						<th>Id:</th>
-						<td><?php echo $res['id']; ?></td>
-					</tr>
 					<tr>
 						<th>Nombre:</th>
 						<td><?php echo $res['nombre']; ?></td>
 					</tr>
 					<tr>
-						<th>Código:</th>
-						<td><?php echo $res['codigo']; ?></td>
-					</tr>
-					<tr>
 						<th>Precio $:</th>
 						<td><?php echo number_format($res['precio'],0,',','.'); ?></td>
 					</tr>
-					<tr>
-						<th>Activo:</th>
-						<td><?php if($res['activo'] == 1): ?> Si <?php else: ?> No <?php endif; ?></td>
-					</tr>
-					<tr>
-						<th>Fecha de creación:</th>
-						<td><?php echo $res['created_at']; ?></td>
-					</tr>
-					<tr>
-						<th>Fecha de modificación:</th>
-						<td><?php echo $res['updated_at'] ?></td>
-					</tr>
 				</table>
 				<p>
-					<a href="editProducto.php?id=<?php echo $res['id']; ?>" class="btn btn-link">Editar</a>
-					<a href="productos.php" class="btn btn-link">Volver</a>
-					<a href="#" class="btn btn-primary">Eliminar Producto</a>
-					<a href="addImagen.php?id=<?php echo $res['id'];?>" class="btn btn-success">Agregar Imagen</a>
+					Cotizar
 				</p>
 			</div>
 			<!--Caja que muestra  las imagenes asociadas al producto-->
 			<div class="col-md-6 mt-3">
 				<?php
-					//traer todas las imagenes de un producto
-					$sql = $con->prepare("SELECT id, titulo, descripcion, nombre, created_at, updated_at FROM imagenes WHERE producto_id = ?");
-					$sql->bindParam(1, $id);
-					$sql->execute();
-
-					$res = $sql->fetchAll();
 					if (!$res):
 				?>
-					<p class="text-info">No hay imágenes disponibles... Agréguelas a este producto</p>
+					<p class="text-info">No hay imágenes disponibles...</p>
 
 				<?php else:
-					foreach ($res as $r):
+					foreach ($img as $i):
 				?>
-					<div class="col-md-12">
-						<h4><?php echo $r['titulo']; ?></h4>
-						<p class="text-justify"><?php echo $r['descripcion']; ?></p>
-						<img src="<?php echo BASE_IMG . $r['nombre']; ?>" class="img-responsive">
-						<p class="text-info mt-5">
-							Fecha de registro: <?php echo $r['created_at']; ?><br>
-							Fecha de modificación: <?php echo $r['updated_at']; ?>
-						</p>
+					<div class="col-md-8">
+						<img src="<?php echo BASE_IMG . $i['nombre']; ?>" class="img-responsive">
+						<p style="color: #17227A" class="text-justify"><?php echo $i['descripcion']; ?></p>
 					</div>
 				<?php endforeach;endif; ?>
 			</div>
