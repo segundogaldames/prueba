@@ -5,7 +5,7 @@ ini_set('display_errors', '1');
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
 //consulta a la tabla productos, traeremos todos los campos y registros de la tabla productos
-$productos = $con->prepare("SELECT id,nombre,codigo,precio FROM productos ORDER BY id DESC");
+$productos = $con->prepare("SELECT id,nombre,codigo,precio,activo FROM productos ORDER BY id DESC");
 
 //ejecutar la consulta o traemos los datos efectivamente
 $productos->execute();
@@ -54,6 +54,7 @@ $res = $productos->fetchAll();
 						<th>Producto</th>
 						<th>Código</th>
 						<th>Precio ($)</th>
+						<th>Activo</th>
 					</thead>
 				</tr>
 				<?php foreach($res as $r): ?>
@@ -64,6 +65,7 @@ $res = $productos->fetchAll();
 						</td>
 						<td><?php echo $r['codigo']; ?></td>
 						<td class="text-right"><?php echo number_format($r['precio'],0,',','.'); ?></td>
+						<td><?php if($r['activo'] == 1): ?> Si <?php else: ?> No <?php endif; ?></td>
 					</tr>
 				<?php endforeach; ?>
 			</table>

@@ -11,7 +11,7 @@ if (isset($_GET['id'])) {
 	$id = (int) $_GET['id'];
 
 	//consulta a la tabla productos, traeremos todos los campos y registros de la tabla productos asociados a un id
-	$producto = $con->prepare("SELECT id,nombre,codigo,precio FROM productos WHERE id = ?");
+	$producto = $con->prepare("SELECT id,nombre,codigo,precio,activo FROM productos WHERE id = ?");
 	$producto->bindParam(1, $id); //sanitizando la variable
 
 	//ejecutar la consulta o traemos los datos efectivamente
@@ -28,18 +28,22 @@ if (isset($_GET['id'])) {
 
 		//esta variable se parsea u obliga a ser un entero
 		$precio = (int) $_POST['precio'];
+		$activo = (int) $_POST['activo'];
 
 		if (!$nombre) {
 			$mensaje = 'Ingrese el nombre del producto';
 		}elseif (!$codigo) {
 			$mensaje = 'Ingrese el código del producto';
+		}elseif (!$activo) {
+			$mensaje = 'Seleccione el estado del producto';
 		}else{
 			//enviar los datos a la base de datos para actualizacion
-			$sql = $con->prepare("UPDATE productos SET nombre = ?, codigo = ?, precio = ? WHERE id = ?");
+			$sql = $con->prepare("UPDATE productos SET nombre = ?, codigo = ?, precio = ?, activo = ? WHERE id = ?");
 			$sql->bindParam(1, $nombre);
 			$sql->bindParam(2, $codigo);
 			$sql->bindParam(3, $precio);
-			$sql->bindParam(4, $id);
+			$sql->bindParam(4, $activo);
+			$sql->bindParam(5, $id);
 			$sql->execute();
 
 			//numero de registros ingresados
@@ -90,6 +94,16 @@ if (isset($_GET['id'])) {
 				<div class="form-group">
 					<label>Precio producto (CLP)</label>
 					<input type="text" name="precio" placeholder="Precio del producto" class="form-control" value="<?php echo $res['precio']; ?>">
+				</div>
+				<div class="form-group">
+					<label>Estado</label>
+					<select name="activo" class="form-control">
+						<option value="<?php echo $res['activo']; ?>">
+							<?php if($res['activo'] == 1): ?> Activo <?php else: ?> Inactivo <?php endif; ?>
+						</option>
+						<option value="1">Activar</option>
+						<option value="2">Desactivar</option>
+					</select>
 				</div>
 				<div class="form-group">
 					<input type="hidden" name="enviar" value="si">

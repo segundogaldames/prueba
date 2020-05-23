@@ -28,7 +28,8 @@ if (isset($_POST['enviar']) && $_POST['enviar'] == 'si') {
 			$mensaje = 'El producto ingresado ya existe... intentelo nuevamente';
 		}else{
 			//enviar los datos a la base de datos
-			$sql = $con->prepare("INSERT INTO productos VALUES(null, ?, ?, ?, now(),now())");
+			// activo = 1 y no activo = 2
+			$sql = $con->prepare("INSERT INTO productos VALUES(null, ?, ?, ?, 1, now(),now())");
 			$sql->bindParam(1, $nombre);
 			$sql->bindParam(2, $codigo);
 			$sql->bindParam(3, $precio);
