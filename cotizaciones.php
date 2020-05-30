@@ -2,19 +2,20 @@
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
 
-//requerimos la conexion a la base de datos
+//se requiere el codigo del archivo conexion.php
 require('conexion.php');
-require('config.php');
+//consulta a la tabla productos, traeremos todos los campos y registros de la tabla productos
+$cotizaciones = $con->query("SELECT c.id, p.nombre as producto, c.cantidad, c.created_at FROM cotizaciones c INNER JOIN productos p ON c.producto_id = p.id ORDER BY c.created_at DESC");
 
-//listar las imagenes con los productos asociados que esten en condicion de activo (activo =1)
-$sql = $con->query("SELECT p.id, img.nombre as imagen, p.nombre as producto, p.precio FROM imagenes as img INNER JOIN productos as p ON p.id = img.producto_id WHERE p.activo = 1 AND img.portada = 1");
+//especificar que necesitamos todos los datos
+$res = $cotizaciones->fetchAll();
 
-$res = $sql->fetchAll();
-/*
-echo '<pre>';
-print_r($res);exit;
-echo '</pre>';
-*/
+//print_r($res);exit;
+
+//comprobar que los datos estan disponibles
+//print_r($res);
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -31,23 +32,33 @@ echo '</pre>';
 	<div class="container">
 		<!--llamada a menu de navegacion-->
 		<?php include('header.php') ?>
-		<div class="col-md-12 mt-3">
-			<h3 class="text-center">Lista de Productos</h3>
-			
-			<?php if(isset($_GET['m'])):?>
-				<p class="alert alert-success">Su cotización se ha agregado al carro de cotizaciones</p>
-			<?php endif; ?>
-
-			<div class="row">
+		<div class="col-md-8 mt-3">
+			<table class="table table-hover table-bordered">
+				<!--Declaracion de las columnas de la tabla con sus nombres-->
+				<tr>
+					<thead class="thead-light text-center">
+						<th>Id</th>
+						<th>Producto</th>
+						<th>Cantidad</th>
+						<th>Fecha</th>
+					</thead>
+				</tr>
 				<?php foreach($res as $r): ?>
-					<div class="col-md-3">
-						<a href="verGaleria.php?id=<?php echo $r['id']; ?>">
-							<img src="<?php echo BASE_IMG . $r['imagen']; ?>" class="img-responsive" height="245">
-						</a>
-						<h3 class="text-center" style="color: #17227A">$<?php echo number_format($r['precio'],0,',','.'); ?></h3>
-					</div>
+					<tr>
+						<td><?php echo $r['id']; ?></td>
+						<td>
+							<?php echo $r['producto']; ?></a>
+						</td>
+						<td><?php echo $r['cantidad']; ?></td>
+						<td>
+							<?php
+								$fecha = new DateTime($r['created_at']);
+								echo $fecha->format('d-m-Y H:i:s');
+							?>
+						</td>
+					</tr>
 				<?php endforeach; ?>
-			</div>
+			</table>
 		</div>
 	</div>
 </body>

@@ -41,37 +41,37 @@ if (isset($_GET['id_img'])) {
 		}elseif(!$portada){
 			$mensaje = 'Seleccione una opción de portada';
 		}else{
-			//verificamos que la imagen no exista previamente
-			
-			//guardar la imagen en el directorio escogido
-			$upload = $_SERVER['DOCUMENT_ROOT'] . '/prueba/img/';
-			$fichero_subido = $upload . basename($_FILES['imagen']['name']);
-			//print_r($fichero_subido);exit;
-			//
-			
-			if (move_uploaded_file($_FILES['imagen']['tmp_name'], $fichero_subido)) {
-					//guardar los datos en la base de datos
+			//proceso de verificacion de subida de imagen
+			if($nom_imagen){
+				//guardar la imagen en el directorio escogido
+				$upload = $_SERVER['DOCUMENT_ROOT'] . '/prueba/img/';
+				$fichero_subido = $upload . basename($_FILES['imagen']['name']);
 
-				$sql = $con->prepare("UPDATE imagenes SET titulo = ?, descripcion = ?, producto_id = ?, nombre = ?, portada = ?, updated_at = now() WHERE id = ?");
-				$sql->bindParam(1, $titulo);
-				$sql->bindParam(2, $descripcion);
-				$sql->bindParam(3, $producto);
-				$sql->bindParam(4, $nom_imagen);
-				$sql->bindParam(5, $portada);
-				$sql->bindParam(6, $id);
-				$sql->execute();
-
-				$row = $sql->rowCount();
-				
-				if ($row) {
-					$msg = 'ok';
-					header('Location: verProducto.php?id=' . $producto . '&img=' . $msg );
-				}else{
-					$mensaje = 'La imagen no se ha podido modificar';
-					}
+				if (!move_uploaded_file($_FILES['imagen']['tmp_name'], $fichero_subido)) {
+					$mensaje = 'La imagen no se ha podido subir';
+				}	
 			}else{
-				$mensaje = 'La imagen no se ha podido subir';
-			}		
+				$nom_imagen = $img['imagen'];
+			}
+
+			$sql = $con->prepare("UPDATE imagenes SET titulo = ?, descripcion = ?, producto_id = ?, nombre = ?, portada = ?, updated_at = now() WHERE id = ?");
+			$sql->bindParam(1, $titulo);
+			$sql->bindParam(2, $descripcion);
+			$sql->bindParam(3, $producto);
+			$sql->bindParam(4, $nom_imagen);
+			$sql->bindParam(5, $portada);
+			$sql->bindParam(6, $id);
+			$sql->execute();
+
+			$row = $sql->rowCount();
+
+			if($row){
+				$msg = 'ok';
+				header('Location: verProducto.php?id=' . $producto . '&img=' . $msg );
+
+			}else{
+				$mensaje = 'La imagen no se ha podido modificar';
+			}
 		}
 	}
 }

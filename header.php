@@ -10,9 +10,6 @@
         <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="productos.php">Productos</a>
-      </li>
-      <li class="nav-item">
         <a class="nav-link" href="galeriaProductos.php">Galería</a>
       </li>
       <li class="nav-item dropdown">
@@ -20,9 +17,10 @@
           Administración
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="usuarios.php">Usuarios</a>
+          <a class="dropdown-item" href="cotizaciones.php">Cotizaciones</a>
+          <a class="dropdown-item" href="productos.php">Productos</a>
           <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="usuarios.php">Usuarios</a>        
           <a class="dropdown-item" href="roles.php">Roles</a>
         </div>
       </li>

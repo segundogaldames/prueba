@@ -12,7 +12,7 @@ if (isset($_GET['id'])) {
 	$id = (int) $_GET['id'];
 
 	//consulta a la tabla productos por id
-	$producto = $con->prepare("SELECT nombre, precio FROM productos WHERE id = ?");
+	$producto = $con->prepare("SELECT id, nombre, precio FROM productos WHERE id = ?");
 	$producto->bindParam(1, $id); //sanitizando la variable
 
 	//ejecutar la consulta o traemos los datos efectivamente
@@ -27,6 +27,47 @@ if (isset($_GET['id'])) {
 	$imagenes->execute();
 
 	$img = $imagenes->fetchAll();
+
+	if(isset($_POST['enviar']) && $_POST['enviar'] == 'si'){
+		$cantidad = (int) $_POST['cantidad'];
+		$prod = (int) $_POST['producto'];
+
+		//print_r($_POST);exit;
+		
+		if(!$cantidad){
+			$mensaje = 'Seleccione una cantidad';
+		}elseif(!$prod){
+			$mensaje = 'El producto no ha sido recuperado';
+		}else{
+			//verificar que el producto exista
+			$sql = $con->prepare("SELECT id FROM productos WHERE id = ?");
+			$sql->bindParam(1, $prod);
+			$sql->execute();
+
+			$product = $sql->fetch();
+
+			if($product){
+			//proceso de registro de cotizacion
+				$sql = $con->prepare("INSERT INTO cotizaciones VALUES(null, ?, ?, now(), now())");
+				$sql->bindParam(1, $prod);
+				$sql->bindParam(2, $cantidad);
+				$sql->execute();
+
+				$row = $sql->rowCount();
+
+				if($row){
+					$msg = 'ok';
+					//header redirecciona a otro sitio
+					header('Location: galeriaProductos.php?m=' . $msg);
+				}else{
+					$mensaje = 'Su cotización no ha podido ser registrada... intente mas tarde';
+				}
+			//notificamos el proceso
+			}else{
+				$mensaje = 'El producto no ha sido recuperado';
+			}
+		}
+	}
 }
 ?>
 <!DOCTYPE html>
@@ -57,8 +98,28 @@ if (isset($_GET['id'])) {
 						<td><?php echo number_format($res['precio'],0,',','.'); ?></td>
 					</tr>
 				</table>
+				<?php if(isset($mensaje)): ?>
+					<p class="alert alert-danger"><?php echo $mensaje; ?></p>
+				<?php endif; ?>
+				
 				<p>
-					Cotizar
+					<form action="" method="post" class="form-inline" role="form">
+						<div class="form-group mb-2 col-6">
+							<select name="cantidad" class="form-control-plaintext">
+								<option value="">Cantidad...</option>
+								<option value="1">1</option>
+								<option value="2">2</option>
+								<option value="3">3</option>
+								<option value="4">4</option>
+								<option value="5">5</option>
+							</select>
+						</div>
+						<div class="form-group col-6">
+							<input type="hidden" name="producto" value="<?php echo $res['id']; ?>">
+							<input type="hidden" name="enviar" value="si">
+							<button type="submit" class="btn btn-primary">Cotizar</button>
+						</div>
+					</form>
 				</p>
 			</div>
 			<!--Caja que muestra  las imagenes asociadas al producto-->
