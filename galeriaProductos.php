@@ -7,7 +7,7 @@ require('conexion.php');
 require('config.php');
 
 //listar las imagenes con los productos asociados que esten en condicion de activo (activo =1)
-$sql = $con->query("SELECT p.id, img.nombre as imagen, p.nombre as producto, p.precio FROM imagenes as img INNER JOIN productos as p ON p.id = img.producto_id WHERE p.activo = 1");
+$sql = $con->query("SELECT p.id, img.nombre as imagen, p.nombre as producto, p.precio FROM imagenes as img INNER JOIN productos as p ON p.id = img.producto_id WHERE p.activo = 1 AND img.portada = 1");
 
 $res = $sql->fetchAll();
 /*
