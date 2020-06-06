@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
@@ -20,13 +21,18 @@ if (isset($_GET['id'])) {
 
 	//especificar que necesitamos todos los datos
 	$res = $producto->fetch();
+
+	if (!$res) {
+		$_SESSION['danger'] = 'El producto no existe';
+		header('Location: productos.php');
+	}
 }
 
 
 //comprobar que los datos estan disponibles
 //print_r($res);
 
-
+if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 3)):
 ?>
 <!DOCTYPE html>
 <html>
@@ -44,12 +50,19 @@ if (isset($_GET['id'])) {
 		<?php include('header.php'); ?>
 		<div class="row">
 			<div class="col-md-6 mt-3">
-				<?php if(isset($_GET['m'])): ?>
-					<p class="alert alert-success">El producto se ha modificado correctamente</p>
-				<?php endif; ?>
-				<?php if(isset($_GET['img'])): ?>
-					<p class="alert alert-success">La imagen se ha agregado correctamente</p>
-				<?php endif; ?>
+				<?php if(isset($_SESSION['success'])): ?>
+					<p class="alert alert-success"><?php echo $_SESSION['success']; ?></p>
+					<?php
+						unset($_SESSION['success']);
+						endif;
+					?>
+
+					<?php if(isset($_SESSION['danger'])): ?>
+						<p class="alert alert-success"><?php echo $_SESSION['danger']; ?></p>
+					<?php
+						unset($_SESSION['danger']);
+						endif;
+				?>
 				<h3>Ver Producto <?php echo $res['nombre']; ?></h3>
 				<table class="table table-hover table-bordered">
 					<!--Declaracion de las columnas de la tabla con sus nombres-->
@@ -76,28 +89,30 @@ if (isset($_GET['id'])) {
 					<tr>
 						<th>Fecha de creación:</th>
 						<td>
-							<?php 
+							<?php
 								$fecha_reg = new DateTime($res['created_at']);
-								echo $fecha_reg->format('d-m-Y H:i:s'); 
+								echo $fecha_reg->format('d-m-Y H:i:s');
 							?>
-								
+
 						</td>
 					</tr>
 					<tr>
 						<th>Fecha de modificación:</th>
 						<td><?php
 							 	$fecha_mod = new DateTime($res['updated_at']);
-								echo $fecha_mod->format('d-m-Y H:i:s'); 
+								echo $fecha_mod->format('d-m-Y H:i:s');
 							 ?>
-						 	
+
 						 </td>
 					</tr>
 				</table>
 				<p>
-					<a href="editProducto.php?id=<?php echo $res['id']; ?>" class="btn btn-link">Editar</a>
+					<?php if($_SESSION['rol'] == 1): ?>
+						<a href="editProducto.php?id=<?php echo $res['id']; ?>" class="btn btn-link">Editar</a>
+						<a href="#" class="btn btn-primary">Eliminar Producto</a>
+						<a href="addImagen.php?id_img=<?php echo $res['id'];?>" class="btn btn-success">Agregar Imagen</a>
+					<?php endif; ?>
 					<a href="productos.php" class="btn btn-link">Volver</a>
-					<a href="#" class="btn btn-primary">Eliminar Producto</a>
-					<a href="addImagen.php?id_img=<?php echo $res['id'];?>" class="btn btn-success">Agregar Imagen</a>
 				</p>
 			</div>
 			<!--Caja que muestra  las imagenes asociadas al producto-->
@@ -127,13 +142,20 @@ if (isset($_GET['id'])) {
 							Fecha de modificación: <?php echo $fecha_mod->format('d-m-Y H:i:s'); ?>
 						</p>
 					</div>
-					<p>
-						<a href="editImagen.php?id_img=<?php echo $r['id']; ?>" class="btn btn-primary">Editar Imagen</a>
-					</p>
+					<?php if($_SESSION['rol'] == 1): ?>
+						<p>
+							<a href="editImagen.php?id_img=<?php echo $r['id']; ?>" class="btn btn-primary">Editar Imagen</a>
+						</p>
+					<?php endif; ?>
 				<?php endforeach;endif; ?>
-				
+
 			</div>
 		</div>
 	</div>
 </body>
 </html>
+<?php
+	else:
+		header('Location: galeriaProductos.php');
+	endif;
+?>

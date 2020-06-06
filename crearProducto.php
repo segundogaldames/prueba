@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //requerimos la conexion a la base de datos
 require('conexion.php');
@@ -38,15 +39,15 @@ if (isset($_POST['enviar']) && $_POST['enviar'] == 'si') {
 			//numero de registros ingresados
 			$row = $sql->rowCount();
 			if ($row) {
-				$msg = 'ok';
-				header('Location: productos.php?m=' . $msg);
+				$_SESSION['success'] = 'El producto se ha registrado correctamente';
+				header('Location: productos.php');
 			}else{
 				$mensaje = 'El producto no se ha registrado';
 			}
 		}
 	}
 }
-
+if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] == 1)):
 ?>
 <!DOCTYPE html>
 <html>
@@ -92,3 +93,8 @@ if (isset($_POST['enviar']) && $_POST['enviar'] == 'si') {
 	</div>
 </body>
 </html>
+<?php
+else:
+	header('Location: galeriaProductos.php');
+endif;
+?>

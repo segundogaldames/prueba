@@ -24,15 +24,15 @@ if (isset($_GET['id'])) {
 		$row = $cons->rowCount();
 
 		if ($row) {
-			$msg = 'ok';
-			header('Location: productos.php?del=' . $msg);
+			$_SESSION['success'] = 'El producto se ha eliminado correctamente';
+			header('Location: productos.php');
 		}else{
-			$msg = 'error';
-			header('Location: productos.php?err=' . $msg);
+			$_SESSION['danger'] = 'El producto no se ha eliminado';
+			header('Location: productos.php');
 		}
 	}else{
 		//alerta de que el dato no existe
-		$e = 'error';
-		header('Location: productos.php?e=' . $e);
+		$_SESSION['danger'] = 'El producto no existe';
+		header('Location: productos.php');
 	}
 }

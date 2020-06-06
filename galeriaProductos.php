@@ -34,7 +34,12 @@ echo '</pre>';
 		<?php include('header.php') ?>
 		<div class="col-md-12 mt-3">
 			<h3 class="text-center">Lista de Productos</h3>
-			
+			<?php if(isset($_SESSION['success'])): ?>
+				<p class="alert alert-success"><?php echo $_SESSION['success']; ?></p>
+			<?php
+				unset($_SESSION['success']);
+				endif;
+			?>
 			<?php if(isset($_GET['m'])):?>
 				<p class="alert alert-success">Su cotización se ha agregado al carro de cotizaciones</p>
 			<?php endif; ?>

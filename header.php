@@ -22,7 +22,7 @@
               <a class="dropdown-item" href="cotizaciones.php">Cotizaciones</a>
               <a class="dropdown-item" href="productos.php">Productos</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="usuarios.php">Usuarios</a>        
+              <a class="dropdown-item" href="usuarios.php">Usuarios</a>
               <a class="dropdown-item" href="roles.php">Roles</a>
             </div>
           </li>
@@ -32,6 +32,10 @@
       <?php if(!isset($_SESSION['autenticado'])): ?>
         <li class="nav-item">
           <a class="nav-link" href="login.php">Iniciar Session</a>
+        </li>
+        <!--registro de clientes-->
+        <li class="nav-item">
+          <a class="nav-link" href="registro.php">Regístrate</a>
         </li>
       <?php else: ?>
         <li class="nav-item">

@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
@@ -49,8 +50,8 @@ if (isset($_GET['id'])) {
 			//numero de registros ingresados
 			$row = $sql->rowCount();
 			if ($row) {
-				$msg = 'ok';
-				header('Location: verProducto.php?id=' . $id . '&m=' . $msg);
+				$_SESSION['success'] = 'El producto se ha modificado correctamente';
+				header('Location: verProducto.php?id=' . $id);
 			}else{
 				$mensaje = 'El producto no se ha modificado';
 			}
@@ -61,7 +62,7 @@ if (isset($_GET['id'])) {
 //comprobar que los datos estan disponibles
 //print_r($res);
 
-
+if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] == 1)):
 ?>
 <!DOCTYPE html>
 <html>
@@ -115,3 +116,8 @@ if (isset($_GET['id'])) {
 	</div>
 </body>
 </html>
+<?php
+else:
+	header('Location: galeriaProductos.php');
+endif;
+?>

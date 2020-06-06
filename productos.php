@@ -35,18 +35,20 @@ if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 3)):
 		<!--llamada a menu de navegacion-->
 		<?php include('header.php') ?>
 		<div class="col-md-8 mt-3">
-			<?php if(isset($_GET['m'])): ?>
-				<p class="alert alert-success">El producto se ha registrado correctamente</p>
-			<?php endif; ?>
-			<?php if(isset($_GET['e'])): ?>
-				<p class="alert alert-danger">El producto no existe</p>
-			<?php endif; ?>
-			<?php if(isset($_GET['err'])): ?>
-				<p class="alert alert-danger">El producto no se ha eliminado</p>
-			<?php endif; ?>
-			<?php if(isset($_GET['del'])): ?>
-				<p class="alert alert-success">El producto se ha eliminado correctamente</p>
-			<?php endif; ?>
+			<?php if(isset($_SESSION['success'])): ?>
+				<p class="alert alert-success"><?php echo $_SESSION['success']; ?></p>
+			<?php
+				unset($_SESSION['success']);
+				endif;
+			?>
+
+			<?php if(isset($_SESSION['danger'])): ?>
+				<p class="alert alert-success"><?php echo $_SESSION['danger']; ?></p>
+			<?php
+				unset($_SESSION['danger']);
+				endif;
+			?>
+
 			<table class="table table-hover table-bordered">
 				<!--Declaracion de las columnas de la tabla con sus nombres-->
 				<tr>

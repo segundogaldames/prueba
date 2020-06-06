@@ -1,17 +1,20 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //requerimos la conexion a la base de datos
 require('conexion.php');
 require('config.php');
 
-//echo BASE_IMG;exit;
+//print_r($_GET);exit;
 
-if (isset($_GET['id'])) {
-	$id = (int) $_GET['id'];
+if (isset($_GET['id_img'])) {
+	$id = (int) $_GET['id_img'];
+	//print_r($id);exit;
 
 	if (isset($_POST['enviar']) && $_POST['enviar'] == 'si') {
+		//print_r($_POST);
 		$titulo = trim(strip_tags($_POST['titulo']));
 		$descripcion = trim(strip_tags($_POST['descripcion']));
 		$portada = (int) $_POST['portada'];
@@ -29,7 +32,6 @@ if (isset($_GET['id'])) {
 			//verificamos que la imagen no exista previamente
 			$sql = $con->prepare("SELECT id FROM imagenes WHERE nombre = ?");
 			$sql->bindParam(1, $nom_imagen);
-			$sql->bindParam(2, $portada);
 			$sql->execute();
 
 			$res = $sql->fetch();
@@ -54,8 +56,8 @@ if (isset($_GET['id'])) {
 					$row = $sql->rowCount();
 
 					if ($row) {
-						$msg = 'ok';
-						header('Location: verProducto.php?id=' . $id . '&img=' . $msg );
+						$_SESSION['success'] = 'La imagen se ha registrado correctamente';
+						header('Location: verProducto.php?id=' . $id);
 					}else{
 						$mensaje = 'La imagen no se ha podido registrar';
 					}
@@ -66,7 +68,7 @@ if (isset($_GET['id'])) {
 		}
 	}
 }
-
+if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] == 1)):
 ?>
 <!DOCTYPE html>
 <html>
@@ -122,3 +124,8 @@ if (isset($_GET['id'])) {
 	</div>
 </body>
 </html>
+<?php
+else:
+	header('Location: galeriaProductos.php');
+endif;
+?>
