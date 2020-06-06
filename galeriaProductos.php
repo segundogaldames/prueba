@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //requerimos la conexion a la base de datos
 require('conexion.php');

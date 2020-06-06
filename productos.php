@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
@@ -16,7 +17,7 @@ $res = $productos->fetchAll();
 //comprobar que los datos estan disponibles
 //print_r($res);
 
-
+if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 3)):
 ?>
 <!DOCTYPE html>
 <html>
@@ -69,8 +70,15 @@ $res = $productos->fetchAll();
 					</tr>
 				<?php endforeach; ?>
 			</table>
-			<a href="crearProducto.php" class="btn btn-success">Nuevo Producto</a>
+			<?php if($_SESSION['rol'] == 1): ?>
+				<a href="crearProducto.php" class="btn btn-success">Nuevo Producto</a>
+			<?php endif; ?>
 		</div>
 	</div>
 </body>
 </html>
+<?php
+	else:
+		header('Location: galeriaProductos.php');
+	endif;
+?>

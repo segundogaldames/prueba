@@ -1,11 +1,12 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
 //consulta a la tabla productos, traeremos todos los campos y registros de la tabla productos
-$cotizaciones = $con->query("SELECT c.id, p.nombre as producto, c.cantidad, c.created_at FROM cotizaciones c INNER JOIN productos p ON c.producto_id = p.id ORDER BY c.created_at DESC");
+$cotizaciones = $con->query("SELECT c.id, p.nombre as producto, c.cantidad, c.created_at, u.nombre as usuario FROM cotizaciones c INNER JOIN productos p ON c.producto_id = p.id INNER JOIN usuarios u ON c.usuario_id = u.id ORDER BY c.created_at DESC");
 
 //especificar que necesitamos todos los datos
 $res = $cotizaciones->fetchAll();
@@ -15,7 +16,7 @@ $res = $cotizaciones->fetchAll();
 //comprobar que los datos estan disponibles
 //print_r($res);
 
-
+if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 2)):
 ?>
 <!DOCTYPE html>
 <html>
@@ -40,6 +41,7 @@ $res = $cotizaciones->fetchAll();
 						<th>Id</th>
 						<th>Producto</th>
 						<th>Cantidad</th>
+						<th>Cliente</th>
 						<th>Fecha</th>
 					</thead>
 				</tr>
@@ -50,6 +52,7 @@ $res = $cotizaciones->fetchAll();
 							<?php echo $r['producto']; ?></a>
 						</td>
 						<td><?php echo $r['cantidad']; ?></td>
+						<td><?php echo $r['usuario']; ?></td>
 						<td>
 							<?php
 								$fecha = new DateTime($r['created_at']);
@@ -63,3 +66,9 @@ $res = $cotizaciones->fetchAll();
 	</div>
 </body>
 </html>
+<?php
+	else:
+		header('Location: galeriaProductos.php');
+
+	endif;
+?>

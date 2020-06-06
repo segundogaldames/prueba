@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
@@ -48,9 +49,10 @@ if (isset($_GET['id'])) {
 
 			if($product){
 			//proceso de registro de cotizacion
-				$sql = $con->prepare("INSERT INTO cotizaciones VALUES(null, ?, ?, now(), now())");
+				$sql = $con->prepare("INSERT INTO cotizaciones VALUES(null, ?, ?, ?, now(), now())");
 				$sql->bindParam(1, $prod);
 				$sql->bindParam(2, $cantidad);
+				$sql->bindParam(3, $_SESSION['id']);
 				$sql->execute();
 
 				$row = $sql->rowCount();
@@ -102,25 +104,33 @@ if (isset($_GET['id'])) {
 					<p class="alert alert-danger"><?php echo $mensaje; ?></p>
 				<?php endif; ?>
 				
-				<p>
-					<form action="" method="post" class="form-inline" role="form">
-						<div class="form-group mb-2 col-6">
-							<select name="cantidad" class="form-control-plaintext">
-								<option value="">Cantidad...</option>
-								<option value="1">1</option>
-								<option value="2">2</option>
-								<option value="3">3</option>
-								<option value="4">4</option>
-								<option value="5">5</option>
-							</select>
-						</div>
-						<div class="form-group col-6">
-							<input type="hidden" name="producto" value="<?php echo $res['id']; ?>">
-							<input type="hidden" name="enviar" value="si">
-							<button type="submit" class="btn btn-primary">Cotizar</button>
-						</div>
-					</form>
-				</p>
+				<?php if(isset($_SESSION['autenticado'])): ?>
+					<p>
+						<form action="" method="post" class="form-inline" role="form">
+							<div class="form-group mb-2 col-6">
+								<select name="cantidad" class="form-control-plaintext">
+									<option value="">Cantidad...</option>
+									<option value="1">1</option>
+									<option value="2">2</option>
+									<option value="3">3</option>
+									<option value="4">4</option>
+									<option value="5">5</option>
+								</select>
+							</div>
+							<div class="form-group col-6">
+								<input type="hidden" name="producto" value="<?php echo $res['id']; ?>">
+								<input type="hidden" name="enviar" value="si">
+								<button type="submit" class="btn btn-primary">Cotizar</button>
+							</div>
+						</form>
+					</p>
+				<?php else: ?>
+					<p class="text-info">
+						Debe iniciar session o registrarse para cotizar este producto
+						<a href="login.php" class="btn btn-link">Iniciar Session</a> o 
+						<a href="#" class="btn btn-link">Registrarse</a>
+					</p>
+				<?php endif; ?>
 			</div>
 			<!--Caja que muestra  las imagenes asociadas al producto-->
 			<div class="col-md-6 mt-3">

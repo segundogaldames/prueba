@@ -1,6 +1,7 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', '1');
+session_start();
 
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
@@ -16,7 +17,8 @@ $res = $usuarios->fetchAll();
 //comprobar que los datos estan disponibles
 //print_r($res);
 
-
+//controlar acceso a la pagina usuarios.php
+if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] >= 1) && ($_SESSION['rol'] <= 3)):
 ?>
 <!DOCTYPE html>
 <html>
@@ -47,6 +49,11 @@ $res = $usuarios->fetchAll();
 				<p class="alert alert-success">El usuario se ha eliminado correctamente</p>
 			<?php endif; ?>
 			<?php if(isset($res) && count($res)): ?>
+
+				<?php if(isset($_SESSION['autenticado'])): ?>
+						<h3>Bienvenido(a) <?php echo $_SESSION['nombre']; ?></h3>
+				<?php endif; ?>	
+
 				<table class="table table-hover table-bordered">
 					<!--Declaracion de las columnas de la tabla con sus nombres-->
 					<tr>
@@ -76,3 +83,8 @@ $res = $usuarios->fetchAll();
 	</div>
 </body>
 </html>
+<?php 
+	else:
+		header('Location: galeriaProductos.php');
+	endif;
+?>
