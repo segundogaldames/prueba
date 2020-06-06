@@ -75,18 +75,29 @@ if (isset($_GET['id'])) {
 					</tr>
 					<tr>
 						<th>Fecha de creación:</th>
-						<td><?php echo $res['created_at']; ?></td>
+						<td>
+							<?php 
+								$fecha_reg = new DateTime($res['created_at']);
+								echo $fecha_reg->format('d-m-Y H:i:s'); 
+							?>
+								
+						</td>
 					</tr>
 					<tr>
 						<th>Fecha de modificación:</th>
-						<td><?php echo $res['updated_at'] ?></td>
+						<td><?php
+							 	$fecha_mod = new DateTime($res['updated_at']);
+								echo $fecha_mod->format('d-m-Y H:i:s'); 
+							 ?>
+						 	
+						 </td>
 					</tr>
 				</table>
 				<p>
 					<a href="editProducto.php?id=<?php echo $res['id']; ?>" class="btn btn-link">Editar</a>
 					<a href="productos.php" class="btn btn-link">Volver</a>
 					<a href="#" class="btn btn-primary">Eliminar Producto</a>
-					<a href="addImagen.php?id=<?php echo $res['id'];?>" class="btn btn-success">Agregar Imagen</a>
+					<a href="addImagen.php?id_img=<?php echo $res['id'];?>" class="btn btn-success">Agregar Imagen</a>
 				</p>
 			</div>
 			<!--Caja que muestra  las imagenes asociadas al producto-->
@@ -104,17 +115,23 @@ if (isset($_GET['id'])) {
 
 				<?php else:
 					foreach ($res as $r):
+						$fecha_reg = new DateTime($r['created_at']);
+						$fecha_mod = new DateTime($r['updated_at']);
 				?>
 					<div class="col-md-12">
 						<h4><?php echo $r['titulo']; ?></h4>
 						<p class="text-justify"><?php echo $r['descripcion']; ?></p>
 						<img src="<?php echo BASE_IMG . $r['nombre']; ?>" class="img-responsive">
 						<p class="text-info mt-5">
-							Fecha de registro: <?php echo $r['created_at']; ?><br>
-							Fecha de modificación: <?php echo $r['updated_at']; ?>
+							Fecha de registro: <?php echo $fecha_reg->format('d-m-Y H:i:s'); ?><br>
+							Fecha de modificación: <?php echo $fecha_mod->format('d-m-Y H:i:s'); ?>
 						</p>
 					</div>
+					<p>
+						<a href="editImagen.php?id_img=<?php echo $r['id']; ?>" class="btn btn-primary">Editar Imagen</a>
+					</p>
 				<?php endforeach;endif; ?>
+				
 			</div>
 		</div>
 	</div>

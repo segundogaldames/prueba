@@ -6,18 +6,17 @@ session_start();
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
 //consulta a la tabla productos, traeremos todos los campos y registros de la tabla productos
-$productos = $con->prepare("SELECT id,nombre,codigo,precio,activo FROM productos ORDER BY id DESC");
-
-//ejecutar la consulta o traemos los datos efectivamente
-$productos->execute();
+$cotizaciones = $con->query("SELECT c.id, p.nombre as producto, c.cantidad, c.created_at, u.nombre as usuario FROM cotizaciones c INNER JOIN productos p ON c.producto_id = p.id INNER JOIN usuarios u ON c.usuario_id = u.id ORDER BY c.created_at DESC");
 
 //especificar que necesitamos todos los datos
-$res = $productos->fetchAll();
+$res = $cotizaciones->fetchAll();
+
+//print_r($res);exit;
 
 //comprobar que los datos estan disponibles
 //print_r($res);
 
-if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 3)):
+if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 2)):
 ?>
 <!DOCTYPE html>
 <html>
@@ -35,44 +34,34 @@ if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 3)):
 		<!--llamada a menu de navegacion-->
 		<?php include('header.php') ?>
 		<div class="col-md-8 mt-3">
-			<?php if(isset($_GET['m'])): ?>
-				<p class="alert alert-success">El producto se ha registrado correctamente</p>
-			<?php endif; ?>
-			<?php if(isset($_GET['e'])): ?>
-				<p class="alert alert-danger">El producto no existe</p>
-			<?php endif; ?>
-			<?php if(isset($_GET['err'])): ?>
-				<p class="alert alert-danger">El producto no se ha eliminado</p>
-			<?php endif; ?>
-			<?php if(isset($_GET['del'])): ?>
-				<p class="alert alert-success">El producto se ha eliminado correctamente</p>
-			<?php endif; ?>
 			<table class="table table-hover table-bordered">
 				<!--Declaracion de las columnas de la tabla con sus nombres-->
 				<tr>
 					<thead class="thead-light text-center">
 						<th>Id</th>
 						<th>Producto</th>
-						<th>Código</th>
-						<th>Precio ($)</th>
-						<th>Activo</th>
+						<th>Cantidad</th>
+						<th>Cliente</th>
+						<th>Fecha</th>
 					</thead>
 				</tr>
 				<?php foreach($res as $r): ?>
 					<tr>
 						<td><?php echo $r['id']; ?></td>
 						<td>
-							<a href="verProducto.php?id=<?php echo $r['id'];?>"><?php echo $r['nombre']; ?></a>
+							<?php echo $r['producto']; ?></a>
 						</td>
-						<td><?php echo $r['codigo']; ?></td>
-						<td class="text-right"><?php echo number_format($r['precio'],0,',','.'); ?></td>
-						<td><?php if($r['activo'] == 1): ?> Si <?php else: ?> No <?php endif; ?></td>
+						<td><?php echo $r['cantidad']; ?></td>
+						<td><?php echo $r['usuario']; ?></td>
+						<td>
+							<?php
+								$fecha = new DateTime($r['created_at']);
+								echo $fecha->format('d-m-Y H:i:s');
+							?>
+						</td>
 					</tr>
 				<?php endforeach; ?>
 			</table>
-			<?php if($_SESSION['rol'] == 1): ?>
-				<a href="crearProducto.php" class="btn btn-success">Nuevo Producto</a>
-			<?php endif; ?>
 		</div>
 	</div>
 </body>
@@ -80,5 +69,6 @@ if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 3)):
 <?php
 	else:
 		header('Location: galeriaProductos.php');
+
 	endif;
 ?>

@@ -6,24 +6,24 @@ session_start();
 //se requiere el codigo del archivo conexion.php
 require('conexion.php');
 //consulta a la tabla productos, traeremos todos los campos y registros de la tabla productos
-$productos = $con->prepare("SELECT id,nombre,codigo,precio,activo FROM productos ORDER BY id DESC");
+$roles = $con->prepare("SELECT id,nombre FROM roles ORDER BY nombre");
 
 //ejecutar la consulta o traemos los datos efectivamente
-$productos->execute();
+$roles->execute();
 
 //especificar que necesitamos todos los datos
-$res = $productos->fetchAll();
+$res = $roles->fetchAll();
 
 //comprobar que los datos estan disponibles
 //print_r($res);
 
-if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 3)):
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>Productos</title>
+	<title>Roles</title>
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -36,49 +36,38 @@ if(isset($_SESSION['autenticado']) && ($_SESSION['rol'] <= 3)):
 		<?php include('header.php') ?>
 		<div class="col-md-8 mt-3">
 			<?php if(isset($_GET['m'])): ?>
-				<p class="alert alert-success">El producto se ha registrado correctamente</p>
+				<p class="alert alert-success">El rol se ha registrado correctamente</p>
 			<?php endif; ?>
 			<?php if(isset($_GET['e'])): ?>
-				<p class="alert alert-danger">El producto no existe</p>
+				<p class="alert alert-danger">El rol no existe</p>
 			<?php endif; ?>
 			<?php if(isset($_GET['err'])): ?>
-				<p class="alert alert-danger">El producto no se ha eliminado</p>
+				<p class="alert alert-danger">El rol no se ha eliminado</p>
 			<?php endif; ?>
 			<?php if(isset($_GET['del'])): ?>
-				<p class="alert alert-success">El producto se ha eliminado correctamente</p>
+				<p class="alert alert-success">El rol se ha eliminado correctamente</p>
 			<?php endif; ?>
-			<table class="table table-hover table-bordered">
-				<!--Declaracion de las columnas de la tabla con sus nombres-->
-				<tr>
-					<thead class="thead-light text-center">
-						<th>Id</th>
-						<th>Producto</th>
-						<th>Código</th>
-						<th>Precio ($)</th>
-						<th>Activo</th>
-					</thead>
-				</tr>
-				<?php foreach($res as $r): ?>
+			<?php if(isset($res) && count($res)): ?>
+				<table class="table table-hover table-bordered">
+					<!--Declaracion de las columnas de la tabla con sus nombres-->
 					<tr>
-						<td><?php echo $r['id']; ?></td>
-						<td>
-							<a href="verProducto.php?id=<?php echo $r['id'];?>"><?php echo $r['nombre']; ?></a>
-						</td>
-						<td><?php echo $r['codigo']; ?></td>
-						<td class="text-right"><?php echo number_format($r['precio'],0,',','.'); ?></td>
-						<td><?php if($r['activo'] == 1): ?> Si <?php else: ?> No <?php endif; ?></td>
+						<thead class="thead-light text-center">
+							<th>Rol</th>
+						</thead>
 					</tr>
-				<?php endforeach; ?>
-			</table>
-			<?php if($_SESSION['rol'] == 1): ?>
-				<a href="crearProducto.php" class="btn btn-success">Nuevo Producto</a>
+					<?php foreach($res as $r): ?>
+						<tr>
+							<td>
+								<a href="verRol.php?id=<?php echo $r['id'];?>"><?php echo $r['nombre']; ?></a>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+				</table>
+			<?php else: ?>
+				<p class="text-info">No hay roles registrados</p>
 			<?php endif; ?>
+				<a href="crearRol.php" class="btn btn-success">Nuevo Rol</a>
 		</div>
 	</div>
 </body>
 </html>
-<?php
-	else:
-		header('Location: galeriaProductos.php');
-	endif;
-?>
